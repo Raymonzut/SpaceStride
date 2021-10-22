@@ -24,7 +24,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Controller
+      Model
+      View
   other-modules:
       Paths_SpaceStride
   hs-source-dirs:
