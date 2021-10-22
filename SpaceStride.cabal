@@ -1,0 +1,65 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           SpaceStride
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/Raymonzut/SpaceStride#readme>
+homepage:       https://github.com/Raymonzut/SpaceStride#readme
+bug-reports:    https://github.com/Raymonzut/SpaceStride/issues
+author:         Raymon Zutekouw & Vincent Hoffmann
+maintainer:     contact@raymon.dev
+copyright:      2021 Raymon Zutekouw & Vincent Hoffmann
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/Raymonzut/SpaceStride
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_SpaceStride
+  hs-source-dirs:
+      src
+  build-depends:
+      base ==4.*
+    , gloss
+    , random
+  default-language: Haskell2010
+
+executable SpaceStride-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_SpaceStride
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SpaceStride
+    , base ==4.*
+    , gloss
+    , random
+  default-language: Haskell2010
+
+test-suite SpaceStride-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_SpaceStride
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SpaceStride
+    , base ==4.*
+    , gloss
+    , random
+  default-language: Haskell2010
