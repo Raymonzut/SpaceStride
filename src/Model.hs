@@ -1,11 +1,20 @@
 module Model where
 
+import Graphics.Gloss.Data.Point
+
 data GameState = Playing {
-                   elapsedTime :: Float
+                   player :: Player
+                 , elapsedTime :: Float
                  }
 
+
+data Player = Player {
+             -- Origin is center-bottom
+                relPos :: Point
+              }
+
 initialState :: GameState
-initialState = Playing 0
+initialState = Playing (Player (0, 0)) 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
