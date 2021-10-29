@@ -1,14 +1,11 @@
 module Model where
 
-data GameState = GameState {
-                   infoToShow  :: InfoToShow
-                 , elapsedTime :: Float
+data GameState = Playing {
+                   elapsedTime :: Float
                  }
 
-data InfoToShow = ShowNothing
-
 initialState :: GameState
-initialState = GameState ShowNothing 0
+initialState = Playing 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups

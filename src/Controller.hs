@@ -10,7 +10,7 @@ import System.Random
 step :: Float -> GameState -> IO GameState
 step secs gstate
   | elapsedTime gstate + secs > secsPerUpdate
-  = return $ GameState ShowNothing 0
+  = return $ Playing 0
   | otherwise
   = return $ gstate { elapsedTime = elapsedTime gstate + secs }
 
