@@ -1,8 +1,8 @@
 module View where
 
+import Control.Lens
 import GHC.Float
 import Graphics.Gloss
-import Graphics.Gloss.Data.Point
 
 import Model
 
@@ -17,4 +17,11 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture
-viewPure _ = blank
+viewPure gstate = Pictures [
+                    playerPosT gstate . Color white $ rectangleSolid 100 100
+                  ]
+
+playerPosT :: GameState -> Picture -> Picture
+playerPosT gstate = Translate playerPosX playerPosY
+  where playerPosX = fst $ gstate ^. player . relPos
+        playerPosY = 0
