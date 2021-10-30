@@ -2,20 +2,21 @@ module Controller where
 
 import Model
 
-import Graphics.Gloss
+import Control.Lens
 import Graphics.Gloss.Interface.IO.Game
-import System.Random
 
+type GameStateT = GameState -> GameState
 
 step :: Float -> GameState -> IO GameState
 step secs gstate
-  | elapsedTime gstate + secs > secsPerUpdate
-  = return initialState
+  | gstate ^. elapsedTime + secs > secsPerUpdate
+  = return gstate
   | otherwise
-  = return $ gstate { elapsedTime = elapsedTime gstate + secs }
+  = return $ gstate & elapsedTime %~ (+secs)
 
 input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
-inputKey :: Event -> GameState -> GameState
+inputKey :: Event -> GameStateT
+inputKey (EventKey (Char c) _ _ _) gstate = gstate
 inputKey _ gstate = gstate

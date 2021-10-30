@@ -1,17 +1,28 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Model where
 
+import Control.Lens
 import Graphics.Gloss.Data.Point
 
 data GameState = Playing {
-                   player :: Player
-                 , elapsedTime :: Float
+                   _player :: Player
+                 , _elapsedTime :: Float
                  }
-
 
 data Player = Player {
              -- Origin is center-bottom
-                relPos :: Point
+                _relPos :: Point
               }
+
+data Direction = North
+               | East
+               | South
+               | West
+               | Center
+
+makeLenses ''GameState
+makeLenses ''Player
 
 initialState :: GameState
 initialState = Playing (Player (0, 0)) 0
