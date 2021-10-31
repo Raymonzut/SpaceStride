@@ -17,8 +17,11 @@ halfWidthOf = int2Float . (`div` 2) . fst
 halfHeightOf = int2Float . (`div` 2) . snd
 
 screenBoundsH :: Point
-screenBoundsH = ( -halfWidthOf screenSize
-                ,  halfWidthOf screenSize)
+screenBoundsH = ( -halfWidthOf screenSize + screenMargin
+                ,  halfWidthOf screenSize - screenMargin)
+
+screenMargin :: Float
+screenMargin = 10
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -34,4 +37,4 @@ viewPure gstate = Pictures [
 playerPosT :: GameState -> Picture -> Picture
 playerPosT gstate = Translate playerPosX playerPosY
   where playerPosX = fst $ gstate ^. player . relPos
-        playerPosY = 0.5 * gstate ^. player . size . _2 - halfHeightOf screenSize + 10
+        playerPosY = 0.5 * gstate ^. player . size . _2 - halfHeightOf screenSize + screenMargin
