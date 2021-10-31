@@ -34,4 +34,4 @@ viewPure gstate = Pictures [
 playerPosT :: GameState -> Picture -> Picture
 playerPosT gstate = Translate playerPosX playerPosY
   where playerPosX = fst $ gstate ^. player . relPos
-        playerPosY = 0
+        playerPosY = 0.5 * gstate ^. player . size . _2 - halfHeightOf screenSize + 10
