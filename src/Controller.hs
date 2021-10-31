@@ -12,31 +12,47 @@ type GameStateT = GameState -> GameState
 
 step :: Float -> GameState -> IO GameState
 step secs gstate
-  | gstate ^. elapsedTime + secs > secsPerUpdate
-  = return gstate
+  | delta > secsPerUpdate
+  = return $ gstate
+    & movePlayer delta
+    & elapsedTime %~ const 0
   | otherwise
-  = return $ gstate & elapsedTime %~ (+secs)
+  = return $ gstate
+    & elapsedTime %~ (+secs)
+  where delta = gstate ^. elapsedTime + secs
 
 input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameStateT
-inputKey (EventKey (Char c) _ _ _) gstate = gstate
-  & (movePlayer $ toDirection c)
+inputKey (EventKey (Char c) ks _ _) gstate = gstate
+  & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
 
-toDirection :: Char -> Direction
-toDirection 'a' = West
-toDirection 'd' = East
-toDirection _ = Center
+updatePlayerDirection :: Char -> KeyState -> Direction -> Direction
+-- Basic single key movement
+updatePlayerDirection 'a' Up West = Center
+updatePlayerDirection 'a' Down Center = West
+updatePlayerDirection 'd' Up East = Center
+updatePlayerDirection 'd' Down Center = East
+-- Advanced multi key movement
+--- Rebound a -> d
+updatePlayerDirection 'a' Up Center = East
+updatePlayerDirection 'd' Down West = Center
+--- Rebound d -> a
+updatePlayerDirection 'd' Up Center = West
+updatePlayerDirection 'a' Down East = Center
+-- Otherwise
+updatePlayerDirection _   _ dir = dir
 
-movePlayer :: Direction -> GameStateT
-movePlayer dir gstate = gstate & player . relPos %~ newPos dir
-  where newPos West pos = pos & _1 %~ borderedH (+(-spd))
+movePlayer :: Float -> GameStateT
+movePlayer delta gstate = gstate & player . relPos %~ newPos dir
+  where dir = gstate ^. player . moveDirection
+        newPos West pos = pos & _1 %~ borderedH (+(-spd))
         newPos East pos = pos & _1 %~ borderedH (+spd)
         newPos _    pos = pos
         borderedH = withinScreenBordersH $ gstate ^. player . size . _1
-        spd = 10
+        spd = 80 * delta
 
 withinScreenBordersH :: Float -> (Float -> Float) -> Float -> Float
 withinScreenBordersH sizeH f old = snd . head $ filter fst bounded

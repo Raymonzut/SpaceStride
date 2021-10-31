@@ -11,8 +11,9 @@ data GameState = Playing {
                  }
 
 data Player = Player {
+                _moveDirection :: Direction
              -- Origin is center-bottom
-                _relPos :: Point
+              , _relPos :: Point
               , _size :: Point
               }
 
@@ -26,9 +27,8 @@ makeLenses ''GameState
 makeLenses ''Player
 
 initialState :: GameState
-initialState = Playing (Player (0, 0) (100, 100)) 0
+initialState = Playing (Player Center (0, 0) (100, 100)) 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
   where ups = 60
-
