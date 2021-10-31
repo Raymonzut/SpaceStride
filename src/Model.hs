@@ -3,6 +3,7 @@
 module Model where
 
 import Control.Lens
+import GHC.Float
 import Graphics.Gloss.Data.Point
 
 data GameState = Playing {
@@ -31,4 +32,7 @@ initialState = Playing (Player Center (0, 0) (100, 100)) 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
-  where ups = 60
+  where ups = int2Float fps
+
+fps :: Int
+fps = 60
