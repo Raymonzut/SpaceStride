@@ -9,6 +9,9 @@ import Model
 screenSize :: (Int, Int)
 screenSize = (240, 320)
 
+screenSizeF :: (Float, Float)
+screenSizeF = bimap int2Float int2Float screenSize
+
 halfWidthOf, halfHeightOf :: (Int, Int) -> Float
 halfWidthOf = int2Float . (`div` 2) . fst
 halfHeightOf = int2Float . (`div` 2) . snd
@@ -22,9 +25,11 @@ view = return . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gstate = Pictures [
-                    playerPosT gstate . Color white $ uncurry rectangleSolid playerSize
+                    background
+                  , playerPosT gstate . Color white $ uncurry rectangleSolid playerSize
                   ]
   where playerSize = gstate ^. player . size
+        background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
 
 playerPosT :: GameState -> Picture -> Picture
 playerPosT gstate = Translate playerPosX playerPosY
