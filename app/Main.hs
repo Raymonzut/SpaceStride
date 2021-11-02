@@ -4,16 +4,12 @@ import Controller
 import Model
 import View
 
-import Data.Map (fromList)
-import Data.Maybe
+import LibAssets
 
-import Graphics.Gloss.Juicy
 import Graphics.Gloss.Interface.IO.Game
 
 main :: IO ()
-main = do assets <- loadAssets
-
-          let assetsMap = fromList $ zip images assets
+main = do assetsMap <- loadImagesAsMap images
 
           playIO (InWindow "SpaceStride" screenSize (0, 0))
                  black                -- Background color
@@ -25,8 +21,3 @@ main = do assets <- loadAssets
 
 images :: [String]
 images = ["Spaceship"]
-
-loadAssets :: IO [Picture]
-loadAssets = mapM (unwrap . load) images
-  where unwrap = fmap fromJust
-        load image = loadJuicyPNG ("./assets/" ++ image ++ ".png")
