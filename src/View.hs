@@ -29,7 +29,7 @@ view = return . viewPure
 viewPure :: GameState -> Picture
 viewPure gstate = Pictures [
                     background
-                  , playerPosT gstate . Color white $ uncurry rectangleSolid playerSize
+                  , playerPosT gstate (gstate ^. player . sprite)
                   ]
   where playerSize = gstate ^. player . size
         background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
