@@ -2,24 +2,36 @@
 
 module Model where
 
+import Prelude hiding ((+), negate)
+
 import Control.Lens
 import Data.Map (Map, findWithDefault)
 import GHC.Float
 
 import Graphics.Gloss
+import Graphics.Gloss.Data.Point.Arithmetic ((+), negate)
 
 data GameState = Playing {
-                   _player :: Player
+                   _player :: PlayerData
+                 , _enemies :: [EnemyData]
+                 , _worldScroll :: Float
                  , _elapsedTime :: Float
                  }
 
-data Player = Player {
-                _moveDirection :: Direction
-             -- Origin is center-bottom
-              , _relPos :: Point
-              , _size :: Point
-              , _sprite :: Picture
-              }
+data Moveable = Player PlayerData
+              | Enemy  EnemyData
+
+data PlayerData = PlayerData {
+                  _moveDirection :: Direction
+               -- Origin is center-bottom
+                , _relPos :: Point
+                , _size :: Point
+                , _sprite :: Picture
+                }
+
+data EnemyData = EnemyData {
+                 _worldPos :: Point
+               }
 
 data Direction = North
                | East
@@ -27,11 +39,20 @@ data Direction = North
                | West
                | Center
 
+makePrisms ''Moveable
+makeLenses ''PlayerData
+makeLenses ''EnemyData
 makeLenses ''GameState
-makeLenses ''Player
+
+getMoveableScreenPos :: Moveable -> GameState ->  Point
+getMoveableScreenPos m gstate
+  | Just pd <- m ^? _Player = pd ^. relPos
+  | Just ed <- m ^? _Enemy  = ed ^. worldPos & (+pos)
+  where pos = negate (0,0)
+
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing (Player Center (0, 0) (100, 100) spaceshipSprite) 0
+initialState assets = Playing (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0
   where spaceshipSprite = findWithDefault noSprite "Spaceship" assets
         noSprite = undefined
 

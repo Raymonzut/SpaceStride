@@ -27,12 +27,14 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture
-viewPure gstate = Pictures [
+viewPure gstate = Pictures ([
                     background
                   , playerPosT gstate (gstate ^. player . sprite)
-                  ]
+                  ] ++ enemies')
   where playerSize = gstate ^. player . size
         background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
+        enemies' = [Color black $ uncurry rectangleSolid pos | pos <- positions]
+        positions = gstate ^. enemies ^.. folded . worldPos
 
 playerPosT :: GameState -> Picture -> Picture
 playerPosT gstate = Translate playerPosX playerPosY
