@@ -12,8 +12,16 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture
-viewPure (Paused _) = undefined
-viewPure (Playing (pstate)) = Pictures ([
+viewPure (Paused pstate)  = Pictures [ gameView pstate
+                                     , fade
+                                     , pauseText
+                                     ]
+  where fade = Color (makeColorI 50 50 50 100) $ rectangleSolid 1000 1000
+        pauseText = scale 0.2 0.2 $ Text "Paused"
+viewPure (Playing pstate) = gameView pstate
+
+gameView :: PlayingState -> Picture
+gameView pstate = Pictures ([
                     background
                   , playerPosT pstate (pstate ^. player . sprite)
                   ] ++ enemies')

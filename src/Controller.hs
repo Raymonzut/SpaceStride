@@ -32,6 +32,8 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
+inputKey (EventKey (Char 'q') Down _ _) (Playing pstate) = Paused pstate
+inputKey (EventKey (Char 'q') Down _ _) (Paused pstate) = Playing pstate
 inputKey (EventKey (Char c) ks _ _) (Playing pstate) = Playing $ pstate
   & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
