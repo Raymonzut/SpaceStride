@@ -15,6 +15,7 @@ step secs gstate
   | delta > secsPerUpdate
   = return $ gstate
     & movePlayer delta
+    & scrollScreen delta
     & elapsedTime %~ const 0
   | otherwise
   = return $ gstate
@@ -53,6 +54,10 @@ movePlayer delta gstate = gstate & player . relPos %~ newPos dir
         newPos _    pos = pos
         borderedH = withinScreenBordersH $ gstate ^. player . size . _1
         spd = 80 * delta
+
+scrollScreen :: Float -> GameStateT
+scrollScreen delta gstate = gstate & worldScroll %~ (+ speed * delta)
+  where speed = 10
 
 withinScreenBordersH :: Float -> (Float -> Float) -> Float -> Float
 withinScreenBordersH sizeH f old = snd . head $ filter fst bounded

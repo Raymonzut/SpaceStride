@@ -52,7 +52,7 @@ getMoveableScreenPos m gstate
 
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0
+initialState assets = Playing (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [EnemyData (50, 50)] 0 0
   where spaceshipSprite = findWithDefault noSprite "Spaceship" assets
         noSprite = undefined
 
