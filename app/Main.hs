@@ -3,6 +3,7 @@ module Main where
 import Controller
 import Model
 import View
+import ViewConstants
 
 import LibAssets
 

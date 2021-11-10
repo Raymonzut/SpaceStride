@@ -28,6 +28,7 @@ library
       LibAssets
       Model
       View
+      ViewConstants
   other-modules:
       Paths_SpaceStride
   hs-source-dirs:

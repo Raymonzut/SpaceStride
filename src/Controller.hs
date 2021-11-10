@@ -3,20 +3,25 @@
 module Controller where
 
 import Model
-import View(screenBoundsH)
+import ViewConstants(screenBoundsH)
 
 import Control.Lens
 import Graphics.Gloss.Interface.IO.Game
+import System.Random
 
 type GameStateT = GameState -> GameState
 
 step :: Float -> GameState -> IO GameState
 step secs gstate
   | delta > secsPerUpdate
-  = return $ gstate
-    & movePlayer delta
-    & scrollScreen delta
-    & elapsedTime %~ const 0
+  = do randomNumber <- randomIO :: IO Int
+       return $ gstate
+         & seed %~ const randomNumber
+         & movePlayer delta
+         & moveEnemies delta
+         -- & scrollBackground delta
+         & attemptEnemySpawn
+         & elapsedTime %~ const 0
   | otherwise
   = return $ gstate
     & elapsedTime %~ (+secs)
@@ -55,9 +60,19 @@ movePlayer delta gstate = gstate & player . relPos %~ newPos dir
         borderedH = withinScreenBordersH $ gstate ^. player . size . _1
         spd = 80 * delta
 
-scrollScreen :: Float -> GameStateT
-scrollScreen delta gstate = gstate & worldScroll %~ (+ speed * delta)
-  where speed = 10
+moveEnemies :: Float -> GameStateT
+moveEnemies delta gstate = gstate & enemies . each %~ incPos
+  where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + gstate ^. worldScroll) * delta)))
+        speed = 10
+
+scrollBackground :: Float -> GameStateT
+scrollBackground delta gstate = undefined
+
+attemptEnemySpawn :: GameStateT
+attemptEnemySpawn gstate = gstate & enemies %~ addEnemy
+  where willSpawn = (gstate ^. seed) `mod` 420 == 0
+        addEnemy xs | willSpawn = EnemyData (0, -10) : xs
+                    | otherwise = xs
 
 withinScreenBordersH :: Float -> (Float -> Float) -> Float -> Float
 withinScreenBordersH sizeH f old = snd . head $ filter fst bounded
