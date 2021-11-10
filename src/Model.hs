@@ -44,11 +44,11 @@ makeLenses ''PlayerData
 makeLenses ''EnemyData
 makeLenses ''GameState
 
-getMoveableScreenPos :: Moveable -> GameState ->  Point
-getMoveableScreenPos m gstate
+getMoveableScreenPos :: GameState -> Moveable ->  Point
+getMoveableScreenPos gstate m
   | Just pd <- m ^? _Player = pd ^. relPos
   | Just ed <- m ^? _Enemy  = ed ^. worldPos & (+pos)
-  where pos = negate (0,0)
+  where pos = negate (0, gstate ^. worldScroll)
 
 
 initialState :: Map String Picture -> GameState

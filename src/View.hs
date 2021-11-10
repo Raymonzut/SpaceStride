@@ -3,7 +3,6 @@ module View where
 import Control.Lens
 import GHC.Float
 import Graphics.Gloss
-import qualified Graphics.Gloss.Data.Point.Arithmetic as Point ((-))
 
 import Model
 
@@ -34,12 +33,11 @@ viewPure gstate = Pictures ([
                   ] ++ enemies')
   where playerSize = gstate ^. player . size
         background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
-        --enemies' = [Color black $ uncurry rectangleSolid pos | pos <- positions]
-        enemies' = [ uncurry Translate (enemyPos Point.- (0, gstate ^. worldScroll)) . Color black $ uncurry rectangleSolid enemySize
+        enemies' = [ uncurry Translate enemyPos . Color black $ uncurry rectangleSolid enemySize
                    | enemyPos <- enemyPositions , enemySize <- sizes]
 
         enemyPositions :: [Point]
-        enemyPositions = gstate ^. enemies ^.. folded . worldPos
+        enemyPositions = map (getMoveableScreenPos gstate) ((gstate ^. enemies) ^.. folded .re _Enemy)
         sizes = [(50, 50)]
 
 playerPosT :: GameState -> Picture -> Picture
