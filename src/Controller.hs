@@ -9,13 +9,13 @@ import Control.Lens
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 
-type GameStateT = GameState -> GameState
+type PlayingStateT = PlayingState -> PlayingState
 
 step :: Float -> GameState -> IO GameState
-step secs gstate
+step secs (Playing pstate)
   | delta > secsPerUpdate
   = do randomNumber <- randomIO :: IO Int
-       return $ gstate
+       return . Playing $ pstate
          & seed %~ const randomNumber
          & movePlayer delta
          & moveEnemies delta
@@ -23,15 +23,16 @@ step secs gstate
          & attemptEnemySpawn
          & elapsedTime %~ const 0
   | otherwise
-  = return $ gstate
+  = return . Playing $ pstate
     & elapsedTime %~ (+secs)
-  where delta = gstate ^. elapsedTime + secs
+  where delta = pstate ^. elapsedTime + secs
+step _ (Paused pstate) = return $ Paused pstate
 
 input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
-inputKey :: Event -> GameStateT
-inputKey (EventKey (Char c) ks _ _) gstate = gstate
+inputKey :: Event -> GameState -> GameState
+inputKey (EventKey (Char c) ks _ _) (Playing pstate) = Playing $ pstate
   & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
 
@@ -51,26 +52,26 @@ updatePlayerDirection 'a' Down East = Center
 -- Otherwise
 updatePlayerDirection _   _ dir = dir
 
-movePlayer :: Float -> GameStateT
-movePlayer delta gstate = gstate & player . relPos %~ newPos dir
-  where dir = gstate ^. player . moveDirection
+movePlayer :: Float -> PlayingStateT
+movePlayer delta pstate = pstate & player . relPos %~ newPos dir
+  where dir = pstate ^. player . moveDirection
         newPos West pos = pos & _1 %~ borderedH (+(-spd))
         newPos East pos = pos & _1 %~ borderedH (+spd)
         newPos _    pos = pos
-        borderedH = withinScreenBordersH $ gstate ^. player . size . _1
+        borderedH = withinScreenBordersH $ pstate ^. player . size . _1
         spd = 80 * delta
 
-moveEnemies :: Float -> GameStateT
-moveEnemies delta gstate = gstate & enemies . each %~ incPos
-  where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + gstate ^. worldScroll) * delta)))
+moveEnemies :: Float -> PlayingStateT
+moveEnemies delta pstate = pstate & enemies . each %~ incPos
+  where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + pstate ^. worldScroll) * delta)))
         speed = 10
 
-scrollBackground :: Float -> GameStateT
-scrollBackground delta gstate = undefined
+scrollBackground :: Float -> PlayingStateT
+scrollBackground delta pstate = undefined
 
-attemptEnemySpawn :: GameStateT
-attemptEnemySpawn gstate = gstate & enemies %~ addEnemy
-  where willSpawn = (gstate ^. seed) `mod` 420 == 0
+attemptEnemySpawn :: PlayingStateT
+attemptEnemySpawn pstate = pstate & enemies %~ addEnemy
+  where willSpawn = (pstate ^. seed) `mod` 420 == 0
         addEnemy xs | willSpawn = EnemyData (0, -10) : xs
                     | otherwise = xs
 

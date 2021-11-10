@@ -4,16 +4,16 @@ module Model where
 
 import Prelude hiding ((+), negate)
 
-import ViewConstants(screenSize, halfHeightOf)
-
 import Control.Lens
 import Data.Map (Map, findWithDefault)
 import GHC.Float
 
 import Graphics.Gloss
-import Graphics.Gloss.Data.Point.Arithmetic ((+), negate)
 
-data GameState = Playing {
+data GameState = Playing { _playingGame :: PlayingState }
+               | Paused { _pausedGame :: PlayingState }
+
+data PlayingState = PlayingState {
                    _player :: PlayerData
                  , _enemies :: [EnemyData]
                  , _worldScroll :: Float
@@ -46,15 +46,16 @@ makePrisms ''Moveable
 makeLenses ''PlayerData
 makeLenses ''EnemyData
 makeLenses ''GameState
+makeLenses ''PlayingState
 
-getMoveableScreenPos :: GameState -> Moveable ->  Point
-getMoveableScreenPos gstate m
+getMoveableScreenPos :: PlayingState -> Moveable ->  Point
+getMoveableScreenPos _ m
   | Just pd <- m ^? _Player = pd ^. relPos
   | Just ed <- m ^? _Enemy  = ed ^. worldPos
 
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0
+initialState assets = Playing $ PlayingState (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0
   where spaceshipSprite = findWithDefault noSprite "Spaceship" assets
         noSprite = undefined
 
