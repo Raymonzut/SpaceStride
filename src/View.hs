@@ -12,9 +12,8 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture
-viewPure (Paused pstate)  = Pictures [ gameView pstate
+viewPure (Paused pstate)  = Pictures [ viewPure (Playing pstate)
                                      , pauseLayer
-                                     , topLayer pstate
                                      ]
 viewPure (Playing pstate) = Pictures [ gameView pstate
                                      , topLayer pstate
