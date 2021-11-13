@@ -21,4 +21,6 @@ main = do assetsMap <- loadImagesAsMap images
                  step                 -- Step function
 
 images :: [String]
-images = ["Spaceship"]
+images = [ "NoSprite"
+         , "Spaceship"
+         ]

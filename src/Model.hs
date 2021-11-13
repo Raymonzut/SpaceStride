@@ -4,8 +4,10 @@ module Model where
 
 import Prelude hiding ((+), negate)
 
+import LibAssets (lookupSprite)
+
 import Control.Lens
-import Data.Map (Map, findWithDefault)
+import Data.Map (Map)
 import GHC.Float
 
 import Graphics.Gloss
@@ -56,8 +58,7 @@ getMoveableScreenPos _ m
 
 initialState :: Map String Picture -> GameState
 initialState assets = Playing $ PlayingState (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0
-  where spaceshipSprite = findWithDefault noSprite "Spaceship" assets
-        noSprite = undefined
+  where spaceshipSprite = lookupSprite "Spaceship" assets
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
