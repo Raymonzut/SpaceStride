@@ -19,7 +19,7 @@ step secs (Playing pstate)
          & seed %~ const randomNumber
          & movePlayer delta
          & moveEnemies delta
-         -- & scrollBackground delta
+         & scrollBackground delta
          & attemptEnemySpawn
          & elapsedTime %~ const 0
   | otherwise
@@ -69,7 +69,7 @@ moveEnemies delta pstate = pstate & enemies . each %~ incPos
         speed = 10
 
 scrollBackground :: Float -> PlayingStateT
-scrollBackground delta pstate = undefined
+scrollBackground delta pstate = pstate & worldScroll %~ (+delta)
 
 attemptEnemySpawn :: PlayingStateT
 attemptEnemySpawn pstate = pstate & enemies %~ addEnemy

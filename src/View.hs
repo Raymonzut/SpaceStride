@@ -14,13 +14,29 @@ view = return . viewPure
 viewPure :: GameState -> Picture
 viewPure (Paused pstate)  = Pictures [ gameView pstate
                                      , pauseLayer
+                                     , topLayer pstate
                                      ]
-viewPure (Playing pstate) = gameView pstate
+viewPure (Playing pstate) = Pictures [ gameView pstate
+                                     , topLayer pstate
+                                     ]
 
 pauseLayer :: Picture
 pauseLayer = Pictures [fade, pauseText]
   where fade = Color (makeColorI 50 50 50 100) $ rectangleSolid 1000 1000
-        pauseText = scale 0.2 0.2 $ Text "Paused"
+        pauseText = textScale $ Text "Paused"
+
+topLayer :: PlayingState -> Picture
+topLayer pstate = Translate (-halfWidthOf screenSize) (halfHeightOf screenSize - layerHeight)
+                $ Pictures [layerOutline, scoreLayer pstate]
+  where layerHeight = 24
+        layerOutline = Translate (halfWidthOf screenSize) (layerHeight / 2)
+                     . Color (greyN 0.25) $ rectangleSolid (fst screenSizeF) layerHeight
+
+scoreLayer :: PlayingState -> Picture
+scoreLayer pstate = Translate 0 1 . textScale . Text $ "Score: " ++ show (getScore pstate)
+
+textScale :: Picture -> Picture
+textScale = scale 0.2 0.2
 
 gameView :: PlayingState -> Picture
 gameView pstate = Pictures ([

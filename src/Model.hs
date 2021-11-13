@@ -2,7 +2,7 @@
 
 module Model where
 
-import Prelude hiding ((+), negate)
+import Prelude hiding (negate)
 
 import LibAssets (lookupSprite)
 
@@ -18,6 +18,7 @@ data GameState = Playing { _playingGame :: PlayingState }
 data PlayingState = PlayingState {
                    _player :: PlayerData
                  , _enemies :: [EnemyData]
+                 , _enemyKillCount :: Float
                  , _worldScroll :: Float
                  , _elapsedTime :: Float
                  , _seed :: Int
@@ -55,9 +56,12 @@ getMoveableScreenPos _ m
   | Just pd <- m ^? _Player = pd ^. relPos
   | Just ed <- m ^? _Enemy  = ed ^. worldPos
 
+getScore :: PlayingState -> Int
+getScore pstate = floor $ pstate ^. worldScroll
+                + pstate ^. enemyKillCount
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing $ PlayingState (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0
+initialState assets = Playing $ PlayingState (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0 0
   where spaceshipSprite = lookupSprite "Spaceship" assets
 
 secsPerUpdate :: Float
