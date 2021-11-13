@@ -16,26 +16,44 @@ viewPure (Paused pstate)  = Pictures [ viewPure (Playing pstate)
                                      , pauseLayer
                                      ]
 viewPure (Playing pstate) = Pictures [ gameView pstate
-                                     , topLayer pstate
+                                     , topLayerScore pstate
                                      ]
+viewPure (GameOver playerScore) = Pictures [ topLayer 24 gameOverMessage
+                                     , highScoreBoard
+                                     , ownScore playerScore
+                                     ]
+  where gameOverMessage = Color white . textScaleLarge $ Text "Game Over!"
+        highScoreBoard = leftAligned
+                       . Color white . textScaleMedium
+                       . Text $ "Highscores:"
+        ownScore = Translate 0 100 . leftAligned
+                 . Color white . textScaleMedium
+                 . Text . ("Dit is jouw score: " ++) . show
 
 pauseLayer :: Picture
 pauseLayer = Pictures [fade, pauseText]
   where fade = Color (makeColorI 50 50 50 100) $ rectangleSolid 1000 1000
-        pauseText = textScale $ Text "Paused"
+        pauseText = textScaleLarge $ Text "Paused"
 
-topLayer :: PlayingState -> Picture
-topLayer pstate = Translate (-halfWidthOf screenSize) (halfHeightOf screenSize - layerHeight)
-                $ Pictures [layerOutline, scoreLayer pstate]
-  where layerHeight = 24
-        layerOutline = Translate (halfWidthOf screenSize) (layerHeight / 2)
+topLayer :: Float -> Picture -> Picture
+topLayer layerHeight = Translate (-halfWidthOf screenSize) (halfHeightOf screenSize - layerHeight)
+
+leftAligned :: Picture -> Picture
+leftAligned = Translate (-halfWidthOf screenSize + margin) 0
+  where margin = 10
+
+topLayerScore :: PlayingState -> Picture
+topLayerScore pstate = topLayer layerHeight (Pictures [layerOutline, scoreLayer pstate])
+  where layerOutline = Translate (halfWidthOf screenSize) (layerHeight / 2)
                      . Color (greyN 0.25) $ rectangleSolid (fst screenSizeF) layerHeight
+        layerHeight = 24
 
 scoreLayer :: PlayingState -> Picture
-scoreLayer pstate = Translate 0 1 . textScale . Text $ "Score: " ++ show (getScore pstate)
+scoreLayer pstate = Translate 0 1 . textScaleLarge . Text $ "Score: " ++ show (getScore pstate)
 
-textScale :: Picture -> Picture
-textScale = scale 0.2 0.2
+textScaleMedium, textScaleLarge :: Picture -> Picture
+textScaleMedium = scale 0.12 0.12
+textScaleLarge = scale 0.2 0.2
 
 gameView :: PlayingState -> Picture
 gameView pstate = Pictures ([
