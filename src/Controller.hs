@@ -9,21 +9,24 @@ import LibHighScoreBoard
 import Control.Lens
 import GHC.Float
 import Graphics.Gloss.Interface.IO.Game
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Point ((-))
 import System.Random
 
+type GameStateT = GameState -> GameState
 type PlayingStateT = PlayingState -> PlayingState
 
 step :: Float -> GameState -> IO GameState
 step secs (Playing pstate)
   | delta > secsPerUpdate
   = do randomNumber <- randomIO :: IO Int
-       return . Playing $ pstate
+       return $ (Playing $ pstate
          & seed %~ const randomNumber
          & movePlayer delta
          & moveEnemies delta
          & scrollBackground delta
          & attemptEnemySpawn
          & elapsedTime %~ const 0
+        )& collisionCheck
   | otherwise
   = return . Playing $ pstate
     & elapsedTime %~ (+secs)
@@ -80,6 +83,16 @@ moveEnemies :: Float -> PlayingStateT
 moveEnemies delta pstate = pstate & enemies . each %~ incPos
   where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + pstate ^. worldScroll) * delta)))
         speed = 70
+
+collisionCheck :: GameStateT
+collisionCheck (Playing pstate)
+  | null hasHit = Playing pstate
+  | otherwise   = GameOverTypeName (getScore pstate) ""
+  where hasHit = filter (\(dx, dy) -> (dx * dx + dy * dy) < (playerSize2 + enemySize2)) distances
+        distances = map (pstate ^. player . relPos Point.-) (pstate ^. enemies ^.. traverse . worldPos)
+        playerSize2 = max (pstate ^. player . size . _1) (pstate ^. player . size . _2)
+        enemySize2 = 25 * 25
+collisionCheck gstate = gstate
 
 scrollBackground :: Float -> PlayingStateT
 scrollBackground delta pstate = pstate & worldScroll %~ (+delta)

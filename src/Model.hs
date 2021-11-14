@@ -4,6 +4,8 @@ module Model where
 
 import Prelude hiding (negate)
 
+import ViewConstants (bottomOfScreenY)
+
 import Control.Lens
 import Data.Map (Map)
 import GHC.Float
@@ -66,7 +68,7 @@ getScore pstate = floor $ pstate ^. worldScroll
                 + pstate ^. enemyKillCount
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing $ PlayingState assets (PlayerData Center (0, 0) (100, 100)) [] 0 0 0 0
+initialState assets = Playing $ PlayingState assets (PlayerData Center (0, 50 + bottomOfScreenY) (100, 100)) [] 0 0 0 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups

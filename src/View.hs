@@ -70,16 +70,14 @@ gameView pstate = Pictures ([
                     background
                   , playerPosT pstate (lookupSprite "Spaceship" (pstate ^. assets))
                   ] ++ enemies')
-  where playerSize = pstate ^. player . size
-        background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
+  where background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
         enemies' = [ uncurry Translate enemyPos $ lookupSprite "Rock" (pstate ^. assets)
-                   | enemyPos <- enemyPositions , enemySize <- sizes]
+                   | enemyPos <- enemyPositions]
 
         enemyPositions :: [Point]
         enemyPositions = map (getMoveableScreenPos pstate) ((pstate ^. enemies) ^.. folded .re _Enemy)
-        sizes = [(50, 50)]
 
 playerPosT :: PlayingState -> Picture -> Picture
 playerPosT pstate = Translate playerPosX playerPosY
   where playerPosX = fst $ pstate ^. player . relPos
-        playerPosY = 0.5 * pstate ^. player . size . _2 - halfHeightOf screenSize + screenMargin
+        playerPosY = snd $ pstate^. player . relPos
