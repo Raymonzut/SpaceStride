@@ -18,17 +18,27 @@ viewPure (Paused pstate)  = Pictures [ viewPure (Playing pstate)
 viewPure (Playing pstate) = Pictures [ gameView pstate
                                      , topLayerScore pstate
                                      ]
-viewPure (GameOver playerScore) = Pictures [ topLayer 24 gameOverMessage
-                                     , highScoreBoard
-                                     , ownScore playerScore
-                                     ]
-  where gameOverMessage = Color white . textScaleLarge $ Text "Game Over!"
-        highScoreBoard = leftAligned
+
+viewPure (GameOverTypeName pScore pName) = Pictures [ topLayer 24 gameOverMessage
+                                                    , namedScoreLayer pScore pName
+                                                    ]
+viewPure (GameOverShowScores pScore pName) = Pictures [ topLayer 24 gameOverMessage
+                                                      , namedScoreLayer pScore pName
+                                                      , highScoreBoard
+                                                      ]
+  where highScoreBoard = leftAligned
+                       . Translate 0 (-50)
                        . Color white . textScaleMedium
                        . Text $ "Highscores:"
-        ownScore = Translate 0 100 . leftAligned
-                 . Color white . textScaleMedium
-                 . Text . ("Dit is jouw score: " ++) . show
+
+namedScoreLayer :: Int -> String -> Picture
+namedScoreLayer pScore pName = Translate 0 (0.5 * halfWidthOf screenSize) . leftAligned . Color white
+                             $ Pictures [ textScaleMedium . Text $ "De score " ++ show pScore
+                                        , Translate 0 (-20) . textScaleMedium . Text $ "Voor speler: " ++ pName
+                                        ]
+
+gameOverMessage :: Picture
+gameOverMessage = Color white . textScaleLarge $ Text "Game Over!"
 
 pauseLayer :: Picture
 pauseLayer = Pictures [fade, pauseText]

@@ -14,7 +14,8 @@ import Graphics.Gloss
 
 data GameState = Playing { _playingGame :: PlayingState }
                | Paused { _pausedGame :: PlayingState }
-               | GameOver { _score :: Float }
+               | GameOverTypeName { _score :: Int, _playerName :: String }
+               | GameOverShowScores { _score :: Int, _playerName :: String}
 
 data PlayingState = PlayingState {
                    _player :: PlayerData

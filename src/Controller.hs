@@ -26,14 +26,24 @@ step secs (Playing pstate)
   = return . Playing $ pstate
     & elapsedTime %~ (+secs)
   where delta = pstate ^. elapsedTime + secs
-step _ (Paused pstate) = return $ Paused pstate
+step _ gstate = return gstate
 
 input :: Event -> GameState -> IO GameState
+input e gstate@(GameOverTypeName _ __) = return (typeName e gstate)
 input e gstate = return (inputKey e gstate)
 
+typeName :: Event -> GameState -> GameState
+typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = gstate & playerName %~ (++ [key])
+typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = GameOverShowScores pScore pName
+typeName _ gstate = gstate
+
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char 'q') Down _ _) (Playing pstate) = Paused pstate
-inputKey (EventKey (Char 'q') Down _ _) (Paused pstate) = Playing pstate
+inputKey (EventKey (Char 'p') Down _ _) (Playing pstate) = Paused pstate
+inputKey (EventKey (Char 'p') Down _ _) (Paused pstate) = Playing pstate
+
+inputKey (EventKey (Char 'q') Down _ _) (Playing pstate) = GameOverTypeName (getScore pstate) ""
+inputKey (EventKey (Char 'q') Down _ _) (Paused pstate) = GameOverTypeName (getScore pstate) ""
+
 inputKey (EventKey (Char c) ks _ _) (Playing pstate) = Playing $ pstate
   & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
