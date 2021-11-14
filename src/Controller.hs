@@ -3,10 +3,11 @@
 module Controller where
 
 import Model
-import ViewConstants(screenBoundsH)
+import ViewConstants
 import LibHighScoreBoard
 
 import Control.Lens
+import GHC.Float
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 
@@ -73,21 +74,22 @@ movePlayer delta pstate = pstate & player . relPos %~ newPos dir
         newPos East pos = pos & _1 %~ borderedH (+spd)
         newPos _    pos = pos
         borderedH = withinScreenBordersH $ pstate ^. player . size . _1
-        spd = 80 * delta
+        spd = 120 * delta
 
 moveEnemies :: Float -> PlayingStateT
 moveEnemies delta pstate = pstate & enemies . each %~ incPos
   where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + pstate ^. worldScroll) * delta)))
-        speed = 10
+        speed = 70
 
 scrollBackground :: Float -> PlayingStateT
 scrollBackground delta pstate = pstate & worldScroll %~ (+delta)
 
 attemptEnemySpawn :: PlayingStateT
 attemptEnemySpawn pstate = pstate & enemies %~ addEnemy
-  where willSpawn = (pstate ^. seed) `mod` 420 == 0
-        addEnemy xs | willSpawn = EnemyData (0, -10) : xs
+  where willSpawn = (pstate ^. seed) `mod` 26 == 0
+        addEnemy xs | willSpawn = EnemyData (x, halfHeightOf screenSize) : xs
                     | otherwise = xs
+        x = int2Float (((pstate ^. seed) `div` 10) `mod` (screenSize ^. _2) - float2Int (halfWidthOf screenSize))
 
 withinScreenBordersH :: Float -> (Float -> Float) -> Float -> Float
 withinScreenBordersH sizeH f old = snd . head $ filter fst bounded

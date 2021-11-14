@@ -20,4 +20,4 @@ screenBoundsH = ( -halfWidthOf screenSize + screenMargin
                 ,  halfWidthOf screenSize - screenMargin)
 
 screenMargin :: Float
-screenMargin = 10
+screenMargin = -10
