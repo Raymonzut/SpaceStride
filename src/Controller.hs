@@ -106,7 +106,7 @@ attemptEnemySpawn pstate = pstate & enemies %~ addEnemy
   where willSpawn = (pstate ^. seed) `mod` 26 == 0
         addEnemy xs | willSpawn = EnemyData (x, halfHeightOf screenSize) : xs
                     | otherwise = xs
-        x = int2Float (((pstate ^. seed) `div` 10) `mod` (screenSize ^. _2) - float2Int (halfWidthOf screenSize))
+        x = int2Float (((pstate ^. seed) `div` 10) `mod` (screenSize ^. _1) - float2Int (halfWidthOf screenSize))
 
 withinScreenBordersH :: Float -> (Float -> Float) -> Float -> Float
 withinScreenBordersH sizeH f old = snd . head $ filter fst bounded
