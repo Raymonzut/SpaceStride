@@ -35,8 +35,8 @@ viewPure (GameOverShowScores pScore pName hsBoard) = Pictures [ gameOverMessage
         scoreRows = map (\(txt, offset) -> Translate 0 offset . textScaleMedium . Color white $ Text txt) lines
         lines = zip (map (\(pName, pScore) -> pName ++ " : " ++ show pScore) hsBoard) (map (*(-20)) [1..])
 
-background :: Picture
-background = Color (greyN 0.1) $ rectangle screenSizeF
+background :: Picture -> Picture
+background sprite = sprite
 
 namedScoreLayer :: Int -> String -> Picture
 namedScoreLayer pScore pName = Translate 0 (0.5 * halfWidthOf screenSize) . leftAligned . Color white
@@ -73,7 +73,7 @@ textScaleMedium = scale 0.12 0.12
 textScaleLarge = scale 0.2 0.2
 
 gameView :: PlayingState -> Picture
-gameView pstate = Pictures $ background : enemies'
+gameView pstate = Pictures $ lookupSprite "Background" (pstate ^. assets) : enemies'
   where enemies'   = [ uncurry Translate enemyPos $ lookupSprite "Rock" (pstate ^. assets)
                      | enemyPos <- enemyPositions]
         enemyPositions = map (getMoveableScreenPos pstate) ((pstate ^. enemies) ^.. folded .re _Enemy)

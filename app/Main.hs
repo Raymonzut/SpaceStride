@@ -22,6 +22,7 @@ main = do assetsMap <- loadImagesAsMap images
 
 images :: [String]
 images = [ "NoSprite"
-         , "Spaceship"
+         , "Background"
          , "Rock"
+         , "Spaceship"
          ] ++ ["Spaceship" ++ show frame | frame <- [0..playerAnimationFrameCount] :: [Int]]
