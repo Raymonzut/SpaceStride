@@ -6,6 +6,8 @@ import ViewConstants
 import LibAssets (lookupSprite)
 
 import Control.Lens
+import Data.Fixed
+import GHC.Float
 import Graphics.Gloss
 
 view :: GameState -> IO Picture
@@ -35,8 +37,12 @@ viewPure (GameOverShowScores pScore pName hsBoard) = Pictures [ gameOverMessage
         scoreRows = map (\(txt, offset) -> Translate 0 offset . textScaleMedium . Color white $ Text txt) lines
         lines = zip (map (\(pName, pScore) -> pName ++ " : " ++ show pScore) hsBoard) (map (*(-20)) [1..])
 
-background :: Picture -> Picture
-background sprite = sprite
+background :: PlayingState -> Picture
+background pstate = Pictures [ Translate 0 ((-1) * screenSizeF ^. _2 + cyclicScroll) sprite
+                             , Translate 0 cyclicScroll sprite]
+  where cyclicScroll = (-speed * pstate ^. worldScroll) `mod'` (screenSizeF ^. _2)
+        sprite = lookupSprite "Background" (pstate ^. assets)
+        speed = 40
 
 namedScoreLayer :: Int -> String -> Picture
 namedScoreLayer pScore pName = Translate 0 (0.5 * halfWidthOf screenSize) . leftAligned . Color white
@@ -73,7 +79,7 @@ textScaleMedium = scale 0.12 0.12
 textScaleLarge = scale 0.2 0.2
 
 gameView :: PlayingState -> Picture
-gameView pstate = Pictures $ lookupSprite "Background" (pstate ^. assets) : enemies'
+gameView pstate = Pictures $ background pstate : enemies'
   where enemies'   = [ uncurry Translate enemyPos $ lookupSprite "Rock" (pstate ^. assets)
                      | enemyPos <- enemyPositions]
         enemyPositions = map (getMoveableScreenPos pstate) ((pstate ^. enemies) ^.. folded .re _Enemy)
