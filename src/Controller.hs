@@ -43,11 +43,17 @@ input e gstate@(GameOverTypeName _ __) = typeName e gstate
 input e gstate = return (inputKey e gstate)
 
 typeName :: Event -> GameState -> IO GameState
+typeName (EventKey (SpecialKey KeyBackspace) Down _ _) gstate = return $ gstate & playerName %~ safeInit
+typeName (EventKey (SpecialKey KeyTab) Down _ _) gstate = return $ gstate & playerName %~ safeInit
 typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = return $ gstate & playerName %~ (++ [key])
 typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName)
   = do hsBoard <- updateHighScoreBoard pScore pName
        return $ GameOverShowScores pScore pName hsBoard
 typeName _ gstate = return gstate
+
+safeInit :: [a] -> [a]
+safeInit [] = []
+safeInit txt = init txt
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char 'p') Down _ _) (Playing pstate) = Paused pstate
