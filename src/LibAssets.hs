@@ -8,8 +8,9 @@ import qualified Data.Map (lookup)
 import Graphics.Gloss
 import Graphics.Gloss.Juicy
 
+type AssetStore = Map String Picture
 
-loadImagesAsMap :: [String] -> IO (Map String Picture)
+loadImagesAsMap :: [String] -> IO AssetStore
 loadImagesAsMap images = do assets <- loadAssets images
                             return . fromList $ zip images assets
 
@@ -31,7 +32,7 @@ unwrapPictureWithDefault inpureUnsurePic
 toAssetPath :: String -> String
 toAssetPath filename = "./assets/" ++ filename ++ ".png"
 
-lookupSprite :: String -> Map String Picture -> Picture
+lookupSprite :: String -> AssetStore -> Picture
 lookupSprite name assets = findWithDefault defaultSprite name assets
   where defaultSprite = fromJust $ Data.Map.lookup "NoSprite" assets
 

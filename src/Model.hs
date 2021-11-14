@@ -6,8 +6,9 @@ import Prelude hiding (negate)
 
 import ViewConstants (bottomOfScreenY)
 
+import LibAssets (AssetStore)
+
 import Control.Lens
-import Data.Map (Map)
 import GHC.Float
 
 import Graphics.Gloss
@@ -26,7 +27,7 @@ data GameState = Playing            { _playingGame :: PlayingState }
                                     }
 
 data PlayingState = PlayingState {
-                   _assets :: Map String Picture
+                   _assets :: AssetStore
                  , _player :: PlayerData
                  , _enemies :: [EnemyData]
                  , _worldScroll :: Float
@@ -69,7 +70,7 @@ getMoveableScreenPos _ m
 getScore :: PlayingState -> Int
 getScore pstate = floor $ pstate ^. worldScroll
 
-initialState :: Map String Picture -> GameState
+initialState :: AssetStore -> GameState
 initialState preloadedAssets = Playing $ PlayingState preloadedAssets (PlayerData Center (0, 50 + bottomOfScreenY) 100) [] 0 0 0
 
 secsPerUpdate :: Float
