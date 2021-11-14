@@ -26,6 +26,7 @@ dependencies:
 - gloss-juicy
 - lens
 - random
+- split
 
 library:
   source-dirs: src

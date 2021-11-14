@@ -42,6 +42,7 @@ library
     , gloss-juicy
     , lens
     , random
+    , split
   default-language: Haskell2010
 
 executable SpaceStride-exe
@@ -60,6 +61,7 @@ executable SpaceStride-exe
     , gloss-juicy
     , lens
     , random
+    , split
   default-language: Haskell2010
 
 test-suite SpaceStride-test
@@ -79,4 +81,5 @@ test-suite SpaceStride-test
     , gloss-juicy
     , lens
     , random
+    , split
   default-language: Haskell2010
