@@ -29,7 +29,6 @@ data PlayingState = PlayingState {
                    _assets :: Map String Picture
                  , _player :: PlayerData
                  , _enemies :: [EnemyData]
-                 , _enemyKillCount :: Float
                  , _worldScroll :: Float
                  , _elapsedTime :: Float
                  , _seed :: Int
@@ -69,10 +68,9 @@ getMoveableScreenPos _ m
 
 getScore :: PlayingState -> Int
 getScore pstate = floor $ pstate ^. worldScroll
-                + pstate ^. enemyKillCount
 
 initialState :: Map String Picture -> GameState
-initialState preloadedAssets = Playing $ PlayingState preloadedAssets (PlayerData Center (0, 50 + bottomOfScreenY) 100) [] 0 0 0 0
+initialState preloadedAssets = Playing $ PlayingState preloadedAssets (PlayerData Center (0, 50 + bottomOfScreenY) 100) [] 0 0 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
