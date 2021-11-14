@@ -23,7 +23,9 @@ updateHighScoreBoard :: Int -> String -> IO HighScoreBoard
 updateHighScoreBoard pScore pName
   = do fileExist <- doesFileExist logFilePath
        if not fileExist
-       then return emptyScoreBoard
+       then do let hsBoard = update emptyScoreBoard
+               write hsBoard
+               return hsBoard
        else do content <- readFile' logFilePath
                let hsBoard = update $ parse content
                write hsBoard
