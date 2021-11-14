@@ -1,12 +1,12 @@
 module View where
 
-
-import Graphics.Gloss
-
 import Model
 import ViewConstants
+import LibAssets (lookupSprite)
+
 
 import Control.Lens
+import Graphics.Gloss
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -68,7 +68,7 @@ textScaleLarge = scale 0.2 0.2
 gameView :: PlayingState -> Picture
 gameView pstate = Pictures ([
                     background
-                  , playerPosT pstate (pstate ^. player . sprite)
+                  , playerPosT pstate (lookupSprite "Spaceship" (pstate ^. assets))
                   ] ++ enemies')
   where playerSize = pstate ^. player . size
         background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF

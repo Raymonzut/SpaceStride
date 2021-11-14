@@ -4,8 +4,6 @@ module Model where
 
 import Prelude hiding (negate)
 
-import LibAssets (lookupSprite)
-
 import Control.Lens
 import Data.Map (Map)
 import GHC.Float
@@ -21,7 +19,8 @@ data GameState = Playing { _playingGame :: PlayingState }
                                     }
 
 data PlayingState = PlayingState {
-                   _player :: PlayerData
+                   _assets :: Map String Picture
+                 , _player :: PlayerData
                  , _enemies :: [EnemyData]
                  , _enemyKillCount :: Float
                  , _worldScroll :: Float
@@ -37,7 +36,6 @@ data PlayerData = PlayerData {
                -- Origin is center-bottom
                 , _relPos :: Point
                 , _size :: Point
-                , _sprite :: Picture
                 }
 
 data EnemyData = EnemyData {
@@ -68,8 +66,7 @@ getScore pstate = floor $ pstate ^. worldScroll
                 + pstate ^. enemyKillCount
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing $ PlayingState (PlayerData Center (0, 0) (100, 100) spaceshipSprite) [] 0 0 0 0
-  where spaceshipSprite = lookupSprite "Spaceship" assets
+initialState assets = Playing $ PlayingState assets (PlayerData Center (0, 0) (100, 100)) [] 0 0 0 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups
