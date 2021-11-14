@@ -33,3 +33,6 @@ toAssetPath filename = "./assets/" ++ filename ++ ".png"
 lookupSprite :: String -> Map String Picture -> Picture
 lookupSprite name assets = findWithDefault defaultSprite name assets
   where defaultSprite = fromJust $ Data.Map.lookup "NoSprite" assets
+
+playerAnimationFrameCount :: Int
+playerAnimationFrameCount = 30

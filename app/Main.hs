@@ -24,4 +24,4 @@ images :: [String]
 images = [ "NoSprite"
          , "Spaceship"
          , "Rock"
-         ]
+         ] ++ ["Spaceship" ++ show frame | frame <- [0..playerAnimationFrameCount] :: [Int]]

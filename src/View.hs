@@ -16,9 +16,13 @@ viewPure (Paused pstate)  = Pictures [ viewPure (Playing pstate)
                                      , pauseLayer
                                      ]
 viewPure (Playing pstate) = Pictures [ gameView pstate
+                                     , playerPosT pstate (lookupSprite "Spaceship" (pstate ^. assets))
                                      , topLayerScore pstate
                                      ]
-
+viewPure (PlayerDead pstate cnt) = Pictures [ gameView pstate
+                                            , topLayerScore pstate
+                                            , playerPosT pstate (lookupSprite ("Spaceship" ++ show cnt) (pstate ^. assets))
+                                            ]
 viewPure (GameOverTypeName pScore pName) = Pictures [ topLayer 24 gameOverMessage
                                                     , namedScoreLayer pScore pName
                                                     ]
@@ -68,7 +72,6 @@ textScaleLarge = scale 0.2 0.2
 gameView :: PlayingState -> Picture
 gameView pstate = Pictures ([
                     background
-                  , playerPosT pstate (lookupSprite "Spaceship" (pstate ^. assets))
                   ] ++ enemies')
   where background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
         enemies' = [ uncurry Translate enemyPos $ lookupSprite "Rock" (pstate ^. assets)
@@ -78,6 +81,4 @@ gameView pstate = Pictures ([
         enemyPositions = map (getMoveableScreenPos pstate) ((pstate ^. enemies) ^.. folded .re _Enemy)
 
 playerPosT :: PlayingState -> Picture -> Picture
-playerPosT pstate = Translate playerPosX playerPosY
-  where playerPosX = fst $ pstate ^. player . relPos
-        playerPosY = snd $ pstate^. player . relPos
+playerPosT pstate = uncurry Translate $ pstate ^. player . relPos

@@ -4,6 +4,7 @@ module Controller where
 
 import Model
 import ViewConstants
+import LibAssets(playerAnimationFrameCount)
 import LibHighScoreBoard
 
 import Control.Lens
@@ -31,6 +32,9 @@ step secs (Playing pstate)
   = return . Playing $ pstate
     & elapsedTime %~ (+secs)
   where delta = pstate ^. elapsedTime + secs
+step secs (PlayerDead pstate cnt) | cnt == mx = return $ GameOverTypeName (getScore pstate) ""
+                                  | otherwise = return $ PlayerDead (pstate & elapsedTime %~ (+secs)) (float2Int ((pstate ^. elapsedTime) / 0.2))
+  where mx = playerAnimationFrameCount
 step _ gstate = return gstate
 
 input :: Event -> GameState -> IO GameState
@@ -87,7 +91,7 @@ moveEnemies delta pstate = pstate & enemies . each %~ incPos
 collisionCheck :: GameStateT
 collisionCheck (Playing pstate)
   | null hasHit = Playing pstate
-  | otherwise   = GameOverTypeName (getScore pstate) ""
+  | otherwise   = PlayerDead pstate 0
   where hasHit = filter (\(dx, dy) -> (dx * dx + dy * dy) < (playerSize2 + enemySize2)) distances
         distances = map (pstate ^. player . relPos Point.-) (pstate ^. enemies ^.. traverse . worldPos)
         playerSize2 = max (pstate ^. player . size . _1) (pstate ^. player . size . _2)
