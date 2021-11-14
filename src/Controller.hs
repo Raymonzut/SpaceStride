@@ -4,6 +4,7 @@ module Controller where
 
 import Model
 import ViewConstants(screenBoundsH)
+import LibHighScoreBoard
 
 import Control.Lens
 import Graphics.Gloss.Interface.IO.Game
@@ -29,13 +30,14 @@ step secs (Playing pstate)
 step _ gstate = return gstate
 
 input :: Event -> GameState -> IO GameState
-input e gstate@(GameOverTypeName _ __) = return (typeName e gstate)
+input e gstate@(GameOverTypeName _ __) = typeName e gstate
 input e gstate = return (inputKey e gstate)
 
-typeName :: Event -> GameState -> GameState
-typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = gstate & playerName %~ (++ [key])
-typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = GameOverShowScores pScore pName
-typeName _ gstate = gstate
+typeName :: Event -> GameState -> IO GameState
+typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = return $ gstate & playerName %~ (++ [key])
+typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = do updateHighScoreBoard pScore pName
+                                                                                        return $ GameOverShowScores pScore pName
+typeName _ gstate = return gstate
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char 'p') Down _ _) (Playing pstate) = Paused pstate
