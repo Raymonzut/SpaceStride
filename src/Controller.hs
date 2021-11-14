@@ -35,8 +35,8 @@ input e gstate = return (inputKey e gstate)
 
 typeName :: Event -> GameState -> IO GameState
 typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = return $ gstate & playerName %~ (++ [key])
-typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = do updateHighScoreBoard pScore pName
-                                                                                        return $ GameOverShowScores pScore pName
+typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = do hsBoard <- updateHighScoreBoard pScore pName
+                                                                                        return $ GameOverShowScores pScore pName hsBoard
 typeName _ gstate = return gstate
 
 inputKey :: Event -> GameState -> GameState

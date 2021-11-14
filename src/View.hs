@@ -22,14 +22,14 @@ viewPure (Playing pstate) = Pictures [ gameView pstate
 viewPure (GameOverTypeName pScore pName) = Pictures [ topLayer 24 gameOverMessage
                                                     , namedScoreLayer pScore pName
                                                     ]
-viewPure (GameOverShowScores pScore pName) = Pictures [ topLayer 24 gameOverMessage
-                                                      , namedScoreLayer pScore pName
-                                                      , highScoreBoard
-                                                      ]
-  where highScoreBoard = leftAligned
-                       . Translate 0 (-50)
-                       . Color white . textScaleMedium
-                       . Text $ "Highscores:"
+viewPure (GameOverShowScores pScore pName hsBoard) = Pictures [ topLayer 24 gameOverMessage
+                                                              , namedScoreLayer pScore pName
+                                                              , highScoreBoard
+                                                              ]
+  where highScoreBoard = leftAligned . Pictures $ hsHeader : scoreRows
+        hsHeader = textScaleMedium . Color white $ Text "Highscores"
+        scoreRows = map (\(txt, offset) -> Translate 0 offset . textScaleMedium . Color white $ Text txt) lines
+        lines = zip (map (\(player, score) -> player ++ " : " ++ show score) hsBoard) (map (*(-20)) [1..])
 
 namedScoreLayer :: Int -> String -> Picture
 namedScoreLayer pScore pName = Translate 0 (0.5 * halfWidthOf screenSize) . leftAligned . Color white

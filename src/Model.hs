@@ -15,7 +15,10 @@ import Graphics.Gloss
 data GameState = Playing { _playingGame :: PlayingState }
                | Paused { _pausedGame :: PlayingState }
                | GameOverTypeName { _score :: Int, _playerName :: String }
-               | GameOverShowScores { _score :: Int, _playerName :: String}
+               | GameOverShowScores { _score :: Int
+                                    , _playerName :: String
+                                    , _highscoreBoard :: HighScoreBoard
+                                    }
 
 data PlayingState = PlayingState {
                    _player :: PlayerData
@@ -46,6 +49,8 @@ data Direction = North
                | South
                | West
                | Center
+
+type HighScoreBoard = [(String, Int)]
 
 makePrisms ''Moveable
 makeLenses ''PlayerData

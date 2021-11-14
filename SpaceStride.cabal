@@ -37,6 +37,7 @@ library
   build-depends:
       base ==4.*
     , containers
+    , directory
     , gloss
     , gloss-juicy
     , lens
@@ -54,6 +55,7 @@ executable SpaceStride-exe
       SpaceStride
     , base ==4.*
     , containers
+    , directory
     , gloss
     , gloss-juicy
     , lens
@@ -72,6 +74,7 @@ test-suite SpaceStride-test
       SpaceStride
     , base ==4.*
     , containers
+    , directory
     , gloss
     , gloss-juicy
     , lens
