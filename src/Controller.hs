@@ -54,6 +54,10 @@ inputKey (EventKey (Char 'p') Down _ _) (Playing pstate) = Paused pstate
 inputKey (EventKey (Char 'p') Down _ _) (Paused  pstate) = Playing pstate
 inputKey (EventKey (Char 'q') Down _ _) (Playing pstate) = GameOverTypeName (getScore pstate) ""
 inputKey (EventKey (Char 'q') Down _ _) (Paused  pstate) = GameOverTypeName (getScore pstate) ""
+inputKey (EventKey (MouseButton LeftButton) ks _ __)  (Playing pstate) = Playing $ pstate
+  & (player . moveDirection %~ updatePlayerDirection 'a' ks)
+inputKey (EventKey (MouseButton RightButton) ks _ __) (Playing pstate) = Playing $ pstate
+  & (player . moveDirection %~ updatePlayerDirection 'd' ks)
 inputKey (EventKey (Char c) ks _ _)     (Playing pstate) = Playing $ pstate
   & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
