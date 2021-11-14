@@ -37,6 +37,7 @@ library
   build-depends:
       base ==4.*
     , containers
+    , deepseq
     , directory
     , gloss
     , gloss-juicy
@@ -56,6 +57,7 @@ executable SpaceStride-exe
       SpaceStride
     , base ==4.*
     , containers
+    , deepseq
     , directory
     , gloss
     , gloss-juicy
@@ -76,6 +78,7 @@ test-suite SpaceStride-test
       SpaceStride
     , base ==4.*
     , containers
+    , deepseq
     , directory
     , gloss
     , gloss-juicy
