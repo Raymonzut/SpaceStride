@@ -12,10 +12,14 @@ import GHC.Float
 
 import Graphics.Gloss
 
-data GameState = Playing { _playingGame :: PlayingState }
-               | Paused { _pausedGame :: PlayingState }
-               | PlayerDead { _deadGame :: PlayingState, _animationFrameCount :: Int }
-               | GameOverTypeName { _score :: Int, _playerName :: String }
+data GameState = Playing            { _playingGame :: PlayingState }
+               | Paused             { _pausedGame  :: PlayingState }
+               | PlayerDead         { _deadGame    :: PlayingState
+                                    , _animationFrameCount :: Int
+                                    }
+               | GameOverTypeName   { _score :: Int
+                                    , _playerName :: String
+                                    }
                | GameOverShowScores { _score :: Int
                                     , _playerName :: String
                                     , _highscoreBoard :: HighScoreBoard
@@ -36,9 +40,8 @@ data Moveable = Player PlayerData
 
 data PlayerData = PlayerData {
                   _moveDirection :: Direction
-               -- Origin is center-bottom
                 , _relPos :: Point
-                , _size :: Point
+                , _size :: Float
                 }
 
 data EnemyData = EnemyData {
@@ -69,7 +72,7 @@ getScore pstate = floor $ pstate ^. worldScroll
                 + pstate ^. enemyKillCount
 
 initialState :: Map String Picture -> GameState
-initialState assets = Playing $ PlayingState assets (PlayerData Center (0, 50 + bottomOfScreenY) (100, 100)) [] 0 0 0 0
+initialState preloadedAssets = Playing $ PlayingState preloadedAssets (PlayerData Center (0, 50 + bottomOfScreenY) 100) [] 0 0 0 0
 
 secsPerUpdate :: Float
 secsPerUpdate = 1 / ups

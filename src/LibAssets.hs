@@ -20,10 +20,11 @@ loadSingle :: String -> IO (Maybe Picture)
 loadSingle = loadJuicyPNG . toAssetPath
 
 unwrapPictureWithDefault :: IO (Maybe Picture) -> IO Picture
-unwrapPictureWithDefault inpureUnsurePic = do maybeSprite <- inpureUnsurePic
-                                              case maybeSprite of
-                                                (Just p) -> return p
-                                                Nothing -> defaultSprite
+unwrapPictureWithDefault inpureUnsurePic
+  = do maybeSprite <- inpureUnsurePic
+       case maybeSprite of
+         (Just p) -> return p
+         Nothing  -> defaultSprite
   where
         defaultSprite = fromJust <$> loadSingle "NoSprite"
 

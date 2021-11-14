@@ -4,7 +4,8 @@ module Controller where
 
 import Model
 import ViewConstants
-import LibAssets(playerAnimationFrameCount)
+
+import LibAssets (playerAnimationFrameCount)
 import LibHighScoreBoard
 
 import Control.Lens
@@ -43,18 +44,17 @@ input e gstate = return (inputKey e gstate)
 
 typeName :: Event -> GameState -> IO GameState
 typeName (EventKey (Char key) Down _ _) gstate@(GameOverTypeName _ __) = return $ gstate & playerName %~ (++ [key])
-typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName) = do hsBoard <- updateHighScoreBoard pScore pName
-                                                                                        return $ GameOverShowScores pScore pName hsBoard
+typeName (EventKey (SpecialKey KeyEnter) Down _ _) (GameOverTypeName pScore pName)
+  = do hsBoard <- updateHighScoreBoard pScore pName
+       return $ GameOverShowScores pScore pName hsBoard
 typeName _ gstate = return gstate
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char 'p') Down _ _) (Playing pstate) = Paused pstate
-inputKey (EventKey (Char 'p') Down _ _) (Paused pstate) = Playing pstate
-
+inputKey (EventKey (Char 'p') Down _ _) (Paused  pstate) = Playing pstate
 inputKey (EventKey (Char 'q') Down _ _) (Playing pstate) = GameOverTypeName (getScore pstate) ""
-inputKey (EventKey (Char 'q') Down _ _) (Paused pstate) = GameOverTypeName (getScore pstate) ""
-
-inputKey (EventKey (Char c) ks _ _) (Playing pstate) = Playing $ pstate
+inputKey (EventKey (Char 'q') Down _ _) (Paused  pstate) = GameOverTypeName (getScore pstate) ""
+inputKey (EventKey (Char c) ks _ _)     (Playing pstate) = Playing $ pstate
   & (player . moveDirection %~ updatePlayerDirection c ks)
 inputKey _ gstate = gstate
 
@@ -80,7 +80,7 @@ movePlayer delta pstate = pstate & player . relPos %~ newPos dir
         newPos West pos = pos & _1 %~ borderedH (+(-spd))
         newPos East pos = pos & _1 %~ borderedH (+spd)
         newPos _    pos = pos
-        borderedH = withinScreenBordersH $ pstate ^. player . size . _1
+        borderedH = withinScreenBordersH $ pstate ^. player . size
         spd = 120 * delta
 
 moveEnemies :: Float -> PlayingStateT
@@ -94,7 +94,7 @@ collisionCheck (Playing pstate)
   | otherwise   = PlayerDead pstate 0
   where hasHit = filter (\(dx, dy) -> (dx * dx + dy * dy) < (playerSize2 + enemySize2)) distances
         distances = map (pstate ^. player . relPos Point.-) (pstate ^. enemies ^.. traverse . worldPos)
-        playerSize2 = max (pstate ^. player . size . _1) (pstate ^. player . size . _2)
+        playerSize2 = max (pstate ^. player . size) (pstate ^. player . size)
         enemySize2 = 25 * 25
 collisionCheck gstate = gstate
 
