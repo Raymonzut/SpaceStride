@@ -72,7 +72,7 @@ gameView pstate = Pictures ([
                   ] ++ enemies')
   where playerSize = pstate ^. player . size
         background = Color (greyN 0.1) $ uncurry rectangleSolid screenSizeF
-        enemies' = [ uncurry Translate enemyPos . Color black $ uncurry rectangleSolid enemySize
+        enemies' = [ uncurry Translate enemyPos $ lookupSprite "Rock" (pstate ^. assets)
                    | enemyPos <- enemyPositions , enemySize <- sizes]
 
         enemyPositions :: [Point]
