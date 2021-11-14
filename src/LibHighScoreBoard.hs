@@ -3,6 +3,7 @@ module LibHighScoreBoard where
 import Model (HighScoreBoard)
 
 import qualified Data.Map as Map
+import Data.List
 import Data.Maybe
 import Data.List.Split
 import System.Directory
@@ -18,7 +19,9 @@ updateHighScoreBoard pScore pName = do fileExist <- doesFileExist "game.log"
                                        if not fileExist
                                        then return emptyScoreBoard
                                        else do content <- readFile "game.log"
-                                               return $ parse content
+                                               return . update $ parse content
+  where update hsBoard = take hsSize . sortBy cmpScores $ (pName, pScore) : hsBoard
+        cmpScores x y = compare (snd y) (snd x)
 
 parse :: String -> HighScoreBoard
 parse blob = maybe emptyScoreBoard parseRows $ Map.lookup "highscore" parsedFile
