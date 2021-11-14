@@ -23,4 +23,5 @@ main = do assetsMap <- loadImagesAsMap images
 images :: [String]
 images = [ "NoSprite"
          , "Spaceship"
+         , "Rock"
          ]
