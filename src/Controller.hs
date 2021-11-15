@@ -25,6 +25,7 @@ step secs (Playing pstate)
          & seed %~ const randomNumber
          & movePlayer delta
          & moveEnemies delta
+         & pruneOffScreenEnemies
          & scrollBackground delta
          & attemptEnemySpawn
          & elapsedTime %~ const 0
@@ -97,6 +98,10 @@ moveEnemies :: Float -> PlayingStateT
 moveEnemies delta pstate = pstate & enemies . each %~ incPos
   where incPos enemy = enemy & worldPos . _2 %~ (+(-((speed + pstate ^. worldScroll) * delta)))
         speed = 70
+
+pruneOffScreenEnemies :: PlayingStateT
+pruneOffScreenEnemies pstate = pstate & enemies %~ prune
+  where prune = filter (\enemy -> (> bottomOfScreenY) $ getMoveableScreenPos pstate (enemy ^.re _Enemy) ^. _2)
 
 collisionCheck :: GameStateT
 collisionCheck (Playing pstate)
